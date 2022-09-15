@@ -216,9 +216,15 @@ def main(train_dir):
         Returns:
           float tensor of shape [batch_size, height, width, 1] with probabilties
         """
+        with tf.GradientTape() as grad: 
+            y_pred = model(image, training=True) # TODO: Remove this line if you like
+            loss = loss_fn(y, y_pred)
+        gradients = grad.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
-        # TODO: Implement
-        y_pred = model(image) # TODO: Remove this line if you like
+        m = metric_fn(y, y_pred)
+        train_loss.update_state(loss)
+        train_accuracy.update_state(m)
 
         return y_pred
 
@@ -233,8 +239,12 @@ def main(train_dir):
           float tensor of shape [batch_size, height, width, 1] with probabilties
         """
 
-        # TODO: Implement
         y_pred = model(image) # TODO: Remove this line if you like
+        loss = loss_fn(y, y_pred)
+
+        m = metric_fn(y, y_pred)
+        val_loss.update_state(loss)
+        val_accuracy.update_state(m)
 
         return y_pred
 
@@ -242,7 +252,7 @@ def main(train_dir):
     train_writer = tf.summary.create_file_writer(
         os.path.join(train_dir, "train"), flush_millis=3000)
     val_writer = tf.summary.create_file_writer(
-        os.path.join(train_dir, "val"), flush_millis=3000)
+       os.path.join(train_dir, "val"), flush_millis=3000)
     summary_interval = 10
 
     step = 0
