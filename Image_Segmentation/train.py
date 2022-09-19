@@ -201,8 +201,9 @@ def main(train_dir):
 
     train_data = get_train_data(indices[:272], train_batch_size)
     val_data = get_val_data(indices[272:], val_batch_size)
-    #model = segmentation_models.simple_model((HEIGHT, WIDTH, 3))
-    model = segmentation_models.unet((HEIGHT, WIDTH, 3))
+    model = segmentation_models.simple_model((HEIGHT, WIDTH, 3))
+    #model = segmentation_models.unet((HEIGHT, WIDTH, 3))
+    model.summary()
     loss_fn = get_loss_fn()
     metric_fn = preds_evaluated
     optimizer = get_optimizer()
